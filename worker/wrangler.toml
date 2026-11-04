@@ -1,0 +1,7 @@
+name = "nyrr-watch-timer"
+main = "index.js"
+compatibility_date = "2025-09-01"
+workers_dev = false
+
+[triggers]
+crons = ["*/15 * * * *"]

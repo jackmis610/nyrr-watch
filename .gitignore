@@ -1,0 +1,6 @@
+cookies.txt
+watch.log
+watch.err
+__pycache__/
+.ntfy-topic
+.wrangler/
