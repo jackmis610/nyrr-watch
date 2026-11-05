@@ -3,7 +3,8 @@
 
 NYRR has no volunteer wait list: cancelled spots go straight back on the site, so the alert has to
 beat other people to them. Run by GitHub Actions (.github/workflows/watch.yml), which sets NTFY_TOPIC
-so alerts go to phones through ntfy; a Cloudflare timer (worker/) starts it every 15 minutes.
+so alerts go to phones through ntfy. The Cloudflare worker in worker/ does the same check every
+minute and starts this one only when it can't read NYRR.
 No login, never registers. --test sends one test alert.
 """
 import datetime
@@ -61,7 +62,7 @@ def fetch(url):
 
 
 def shifts(page_html):
-    """Every registration option on an event page as (id, name, status, has_plus_one, can_register)."""
+    """Every registration option on an event page as (id, name, status, has_plus_one, register_link)."""
     found = []
     for chunk in page_html.split('data-registration-option-id="')[1:]:
         chunk = chunk.split("</article>")[0]
@@ -70,8 +71,9 @@ def shifts(page_html):
         if status and name:
             plus_one = re.search(r"<li><span[^>]*>9\+1</span></li>", chunk) is not None
             # Only bookable options carry a Register link; sold-out, closed and completed ones don't.
-            can_register = 'href="https://register.nyrr.org/' in chunk
-            found.append((chunk.split('"')[0], html.unescape(name.group(1)).strip(), status.group(1), plus_one, can_register))
+            link = re.search(r'href="(https://register\.nyrr\.org/[^"]+)"', chunk)
+            register_link = html.unescape(link.group(1)) if link else None
+            found.append((chunk.split('"')[0], html.unescape(name.group(1)).strip(), status.group(1), plus_one, register_link))
     return found
 
 
@@ -109,11 +111,11 @@ def main():
             log(f"no shifts parsed: {url}")
             continue
         name = event_name(page, url)
-        for option_id, shift, status, plus_one, can_register in options:
+        for option_id, shift, status, plus_one, register_link in options:
             if not plus_one:
                 continue
-            if can_register:
-                open_now[option_id] = (name, shift, status, url)
+            if register_link:
+                open_now[option_id] = (name, shift, status, register_link)
             else:
                 sold_out += 1
 

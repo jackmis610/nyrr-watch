@@ -4,4 +4,11 @@ compatibility_date = "2025-09-01"
 workers_dev = false
 
 [triggers]
-crons = ["*/15 * * * *"]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "STATE"
+id = "3ca0bb27bc194cea8201aaa97a8e8390"
+
+[observability]
+enabled = true

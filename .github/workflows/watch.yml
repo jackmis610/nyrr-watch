@@ -1,17 +1,8 @@
 name: nyrr-watch
 
-# The Cloudflare timer in worker/ starts this every 15 minutes through workflow_dispatch. GitHub skips
-# most scheduled runs, so the schedule below is only a backup. Times are UTC and cover about
-# 4am-11pm Mountain: hourly by default, every 15 minutes from 10 days before each race.
+# The Cloudflare worker in worker/ checks NYRR every minute itself. It starts this workflow every
+# 15 minutes only when it can't read NYRR from Cloudflare; otherwise this runs by hand.
 on:
-  schedule:
-    - cron: '37 0-5,11-23 30-31 10 *'
-    - cron: '37 0-5,11-23 1-11,22-24 11 *'
-    - cron: '37 0-5,11-23 12-20,31 12 *'
-    - cron: '7,22,37,52 11-23 12-21,25-30 11 *'
-    - cron: '7,22,37,52 0-5 13-22,26-30 11 *'
-    - cron: '7,22,37,52 11-23 1-11,21-30 12 *'
-    - cron: '7,22,37,52 0-5 1-12,22-31 12 *'
   workflow_dispatch:
     inputs:
       test_alert:
