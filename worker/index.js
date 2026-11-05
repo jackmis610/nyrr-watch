@@ -12,6 +12,9 @@ const EVENTS = [
 ];
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 const BLIND_AFTER = 15; // failed checks in a row (minutes) before warning and falling back to GitHub
+// Cookies by host. Kept while Cloudflare reuses this isolate, so later checks skip the Queue-it
+// redirects, which cost three extra requests of the free plan's 10 ms CPU budget.
+const jar = new Map();
 const SUMMARY_HOUR = 8; // local hour of the once-a-day "still watching" notification
 
 function mountain(date) {
@@ -100,7 +103,6 @@ export default {
     const saved = (await env.STATE.get("state")) || '{"open": [], "fails": 0, "summary_day": ""}';
     const state = JSON.parse(saved);
 
-    const jar = new Map();
     let ok = true;
     let soldOut = 0;
     const openNow = new Map();
