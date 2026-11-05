@@ -51,7 +51,8 @@ async function fetchPage(url, jar) {
 // Every registration option on an event page; only bookable ones carry a Register link.
 function shifts(html) {
   return html.split('data-registration-option-id="').slice(1).flatMap((rest) => {
-    const chunk = rest.split("</article>")[0];
+    const end = rest.indexOf("</article>"); // indexOf, not split: split would scan the whole rest of the page
+    const chunk = end < 0 ? rest : rest.slice(0, end);
     const status = /data-event-status="([^"]+)"/.exec(chunk);
     const name = /<h3[^>]*><span>([\s\S]*?)<\/span>/.exec(chunk);
     if (!status || !name) return [];
