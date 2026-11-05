@@ -1,14 +1,12 @@
-// Checks NYRR's volunteer pages for reopened +1 shifts every minute, 5am-11pm Mountain, through 2026,
+// Checks NYRR's Ted Corbitt 15K volunteer page for reopened +1 shifts every minute, 5am-11pm Mountain, through 2026,
 // and alerts phones through ntfy. Openings have been taken within 15 minutes, so the check runs here
 // rather than on GitHub, whose runners take 20-30 seconds to start. State lives in KV. If NYRR can't
 // be read from Cloudflare, it starts the GitHub watcher every 15 minutes instead.
 const REPO = "jackmis610/nyrr-watch";
-// Volunteer events on Nov 22, Dec 5, Dec 12 and Dec 31.
+// Only the Ted Corbitt 15K (Dec 5): NYRR won't let a runner volunteer at a race they're entered in,
+// and Ted Corbitt is the race being cancelled to free a shift. The other three are entered as races.
 const EVENTS = [
-  "https://www.nyrr.org/races-and-events/2026/race-to-deliver-4m-to-benefit-gods-love-we-deliver-volunteers",
   "https://www.nyrr.org/races-and-events/2026/nyrr-ted-corbitt-15k-volunteers",
-  "https://www.nyrr.org/races-and-events/2026/nyrr-frosty-5k-volunteers",
-  "https://www.nyrr.org/races-and-events/2026/nyrr-midnight-run-volunteers",
 ];
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 const BLIND_AFTER = 15; // failed checks in a row (minutes) before warning and falling back to GitHub
@@ -150,7 +148,7 @@ export default {
         const listed = [...openNow.values()].map((o) => `${o.name}: ${o.shift}`).join("; ");
         await notify(env, `NYRR: ${openNow.size} +1 shift(s) open`, listed.slice(0, 180));
       } else {
-        await notify(env, "NYRR: no +1 shifts open today", "Still watching Nov 22, Dec 5, Dec 12 and Dec 31.");
+        await notify(env, "NYRR: no +1 shifts open today", "Still watching the Ted Corbitt 15K (Dec 5).");
       }
     }
 

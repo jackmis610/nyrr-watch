@@ -21,12 +21,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(HERE, "state.json")
 LOG = os.path.join(HERE, "watch.log")
 COOKIES = os.path.join(HERE, "cookies.txt")
-# Volunteer events on Nov 22, Dec 5, Dec 12 and Dec 31.
+# Only the Ted Corbitt 15K (Dec 5): the other three are entered as races, and NYRR
+# won't let a runner volunteer at a race they're entered in.
 EVENTS = [
-    "https://www.nyrr.org/races-and-events/2026/race-to-deliver-4m-to-benefit-gods-love-we-deliver-volunteers",
     "https://www.nyrr.org/races-and-events/2026/nyrr-ted-corbitt-15k-volunteers",
-    "https://www.nyrr.org/races-and-events/2026/nyrr-frosty-5k-volunteers",
-    "https://www.nyrr.org/races-and-events/2026/nyrr-midnight-run-volunteers",
 ]
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 BLIND_AFTER = 3  # failed runs in a row before warning that the watcher can't see the site
@@ -143,7 +141,7 @@ def main():
             listed = "; ".join(f"{n}: {s}" for n, s, _, _ in open_now.values())
             notify(f"NYRR: {len(open_now)} +1 shift(s) open", listed[:180])
         else:
-            notify("NYRR: no +1 shifts open today", "Still watching Nov 22, Dec 5, Dec 12 and Dec 31.")
+            notify("NYRR: no +1 shifts open today", "Still watching the Ted Corbitt 15K (Dec 5).")
 
     log(f"events={len(EVENTS)} open={len(open_now)} sold_out={sold_out} ok={ok}")
     with open(STATE, "w") as f:
